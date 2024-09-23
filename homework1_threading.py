@@ -97,93 +97,93 @@ def calculate_and_compare(start_index, end_index, flag, result):
 
 def calculate_and_compare_KNN(start_index, end_index, flag, result):
     for i in range(start_index, end_index):
-        result[:][(i * 1) : ((i + 1) * 1)] = find_min_distance(images_A[0:30000, :], images_B[(i * 1):((i + 1) * 1), :], flag)
+        result[:, (i * 1) : ((i + 1) * 1)] = find_min_distance(images_A[0:30000, :], images_B[(i * 1):((i + 1) * 1), :], flag)
 
 
 
-# task 1
-start_time = time.perf_counter()
-num = 0
-result_1 = np.zeros(30000, dtype=int)
-threads = []
-chunk_size = 7500 # 每个线程处理的块大小
-for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 1, result_1))
-    threads.append(t)
-    t.start()
-for t in threads:
-    t.join()
-for i in range(30000):
-    if labels_B[i] == labels_A[result_1[i]]:
-        num += 1
-end_time = time.perf_counter()
-elapsed_time = end_time - start_time
-print(f"task1运行时间：{elapsed_time} 秒")
-print(f"task1符合个数：{num}个")
-print(f"task1正确率：{num / 30000}")
+# # task 1
+# start_time = time.perf_counter()
+# num = 0
+# result_1 = np.zeros(30000, dtype=int)
+# threads = []
+# chunk_size = 7500 # 每个线程处理的块大小
+# for i in range(0, 30000, chunk_size):
+#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 1, result_1))
+#     threads.append(t)
+#     t.start()
+# for t in threads:
+#     t.join()
+# for i in range(30000):
+#     if labels_B[i] == labels_A[result_1[i]]:
+#         num += 1
+# end_time = time.perf_counter()
+# elapsed_time = end_time - start_time
+# print(f"task1运行时间：{elapsed_time} 秒")
+# print(f"task1符合个数：{num}个")
+# print(f"task1正确率：{num / 30000}")
 
-# task 2 曼哈顿距离
-start_time = time.perf_counter()
-num = 0
-result_2_1 = np.zeros(30000, dtype=int)
-threads = []
-chunk_size = 7500 # 每个线程处理的块大小
-for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 2, result_2_1))
-    threads.append(t)
-    t.start()
-for t in threads:
-    t.join()
-for i in range(30000):
-    if labels_B[i] == labels_A[result_2_1[i]]:
-        num += 1
-end_time = time.perf_counter()
-elapsed_time = end_time - start_time
-print(f"task2（曼哈顿距离）运行时间：{elapsed_time} 秒")
-print(f"task2（曼哈顿距离）符合个数：{num}个")
-print(f"task2（曼哈顿距离）正确率：{num / 30000}")
+# # task 2 曼哈顿距离
+# start_time = time.perf_counter()
+# num = 0
+# result_2_1 = np.zeros(30000, dtype=int)
+# threads = []
+# chunk_size = 7500 # 每个线程处理的块大小
+# for i in range(0, 30000, chunk_size):
+#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 2, result_2_1))
+#     threads.append(t)
+#     t.start()
+# for t in threads:
+#     t.join()
+# for i in range(30000):
+#     if labels_B[i] == labels_A[result_2_1[i]]:
+#         num += 1
+# end_time = time.perf_counter()
+# elapsed_time = end_time - start_time
+# print(f"task2（曼哈顿距离）运行时间：{elapsed_time} 秒")
+# print(f"task2（曼哈顿距离）符合个数：{num}个")
+# print(f"task2（曼哈顿距离）正确率：{num / 30000}")
 
-# task 2 L_infinity
-start_time = time.perf_counter()
-num = 0
-result_2_2 = np.zeros(30000, dtype=int)
-threads = []
-chunk_size = 7500 # 每个线程处理的块大小
-for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 3, result_2_2))
-    threads.append(t)
-    t.start()
-for t in threads:
-    t.join()
-for i in range(30000):
-    if labels_B[i] == labels_A[result_2_2[i]]:
-        num += 1
-end_time = time.perf_counter()
-elapsed_time = end_time - start_time
-print(f"task2（L_infinity）运行时间：{elapsed_time} 秒")
-print(f"task2（L_infinity）符合个数：{num}个")
-print(f"task2（L_infinity）正确率：{num / 30000}")
+# # task 2 L_infinity
+# start_time = time.perf_counter()
+# num = 0
+# result_2_2 = np.zeros(30000, dtype=int)
+# threads = []
+# chunk_size = 7500 # 每个线程处理的块大小
+# for i in range(0, 30000, chunk_size):
+#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 3, result_2_2))
+#     threads.append(t)
+#     t.start()
+# for t in threads:
+#     t.join()
+# for i in range(30000):
+#     if labels_B[i] == labels_A[result_2_2[i]]:
+#         num += 1
+# end_time = time.perf_counter()
+# elapsed_time = end_time - start_time
+# print(f"task2（L_infinity）运行时间：{elapsed_time} 秒")
+# print(f"task2（L_infinity）符合个数：{num}个")
+# print(f"task2（L_infinity）正确率：{num / 30000}")
 
-# task 2 p=4
-start_time = time.perf_counter()
-num = 0
-result_2_3 = np.zeros(30000, dtype=int)
-threads = []
-chunk_size = 7500 # 每个线程处理的块大小
-for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 4, result_2_3))
-    threads.append(t)
-    t.start()
-for t in threads:
-    t.join()
-for i in range(30000):
-    if labels_B[i] == labels_A[result_2_3[i]]:
-        num += 1
-end_time = time.perf_counter()
-elapsed_time = end_time - start_time
-print(f"task2（p=4）运行时间：{elapsed_time} 秒")
-print(f"task2（p=4）符合个数：{num}个")
-print(f"task2（p=4）正确率：{num / 30000}")
+# # task 2 p=4
+# start_time = time.perf_counter()
+# num = 0
+# result_2_3 = np.zeros(30000, dtype=int)
+# threads = []
+# chunk_size = 7500 # 每个线程处理的块大小
+# for i in range(0, 30000, chunk_size):
+#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 4, result_2_3))
+#     threads.append(t)
+#     t.start()
+# for t in threads:
+#     t.join()
+# for i in range(30000):
+#     if labels_B[i] == labels_A[result_2_3[i]]:
+#         num += 1
+# end_time = time.perf_counter()
+# elapsed_time = end_time - start_time
+# print(f"task2（p=4）运行时间：{elapsed_time} 秒")
+# print(f"task2（p=4）符合个数：{num}个")
+# print(f"task2（p=4）正确率：{num / 30000}")
 
 # task 3 NN=3
 start_time = time.perf_counter()
@@ -193,7 +193,7 @@ result_3_1 = np.zeros((NN, 30000), dtype=int)
 threads = []
 chunk_size = 7500 # 每个线程处理的块大小
 for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 5, result_3_1))
+    t = threading.Thread(target=calculate_and_compare_KNN, args=(i, min(i + chunk_size, 30000), 5, result_3_1))
     threads.append(t)
     t.start()
 for t in threads:
@@ -220,7 +220,7 @@ result_3_2 = np.zeros((NN, 30000), dtype=int)
 threads = []
 chunk_size = 7500 # 每个线程处理的块大小
 for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 6, result_3_2))
+    t = threading.Thread(target=calculate_and_compare_KNN, args=(i, min(i + chunk_size, 30000), 6, result_3_2))
     threads.append(t)
     t.start()
 for t in threads:
@@ -247,7 +247,7 @@ result_3_3 = np.zeros((NN, 30000), dtype=int)
 threads = []
 chunk_size = 7500 # 每个线程处理的块大小
 for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 7, result_3_3))
+    t = threading.Thread(target=calculate_and_compare_KNN, args=(i, min(i + chunk_size, 30000), 7, result_3_3))
     threads.append(t)
     t.start()
 for t in threads:
@@ -274,7 +274,7 @@ result_3_4 = np.zeros((NN, 30000), dtype=int)
 threads = []
 chunk_size = 7500 # 每个线程处理的块大小
 for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 8, result_3_4))
+    t = threading.Thread(target=calculate_and_compare_KNN, args=(i, min(i + chunk_size, 30000), 8, result_3_4))
     threads.append(t)
     t.start()
 for t in threads:
@@ -301,7 +301,7 @@ result_3_5 = np.zeros((NN, 30000), dtype=int)
 threads = []
 chunk_size = 7500 # 每个线程处理的块大小
 for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 9, result_3_5))
+    t = threading.Thread(target=calculate_and_compare_KNN, args=(i, min(i + chunk_size, 30000), 9, result_3_5))
     threads.append(t)
     t.start()
 for t in threads:
