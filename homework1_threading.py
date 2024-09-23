@@ -89,53 +89,63 @@ def find_min_distance(train, test, flag):
         distance = calculate_Euclidean_distance(train_expanded, test_expanded)
         sorted_indices = np.argsort(distance, axis=0)
         location = sorted_indices[0:NN, :]
-    return location
+    return location, distance
 
-def calculate_and_compare(start_index, end_index, flag, result):
+def calculate_and_compare(start_index, end_index, flag, location, distance):
     for i in range(start_index, end_index):
-        result[(i * 1) : ((i + 1) * 1)] = find_min_distance(images_A[0:30000, :], images_B[(i * 1):((i + 1) * 1), :], flag)
+        location[(i * 1) : ((i + 1) * 1)] = find_min_distance(images_A[0:30000, :], images_B[(i * 1):((i + 1) * 1), :], flag)[0]
+        distance[:, (i * 1) : ((i + 1) * 1)] = find_min_distance(images_A[0:30000, :], images_B[(i * 1):((i + 1) * 1), :], flag)[1]
 
-def calculate_and_compare_KNN(start_index, end_index, flag, result):
+def calculate_and_compare_KNN(start_index, end_index, flag, location):
     for i in range(start_index, end_index):
-        result[:, (i * 1) : ((i + 1) * 1)] = find_min_distance(images_A[0:30000, :], images_B[(i * 1):((i + 1) * 1), :], flag)
+        location[:, (i * 1) : ((i + 1) * 1)] = find_min_distance(images_A[0:30000, :], images_B[(i * 1):((i + 1) * 1), :], flag)[0]
+
+def compare_KNN(start_index, end_index, NN, location, distance):
+    for i in range(start_index, end_index):
+        sorted_indices = np.argsort(distance[:, (i * 1):((i + 1) * 1)], axis=0)
+        location[:, (i * 1) : ((i + 1) * 1)] = sorted_indices[0:NN, :]
 
 
 
-# # task 1
-# start_time = time.perf_counter()
-# num = 0
-# result_1 = np.zeros(30000, dtype=int)
-# threads = []
-# chunk_size = 7500 # 每个线程处理的块大小
-# for i in range(0, 30000, chunk_size):
-#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 1, result_1))
-#     threads.append(t)
-#     t.start()
-# for t in threads:
-#     t.join()
-# for i in range(30000):
-#     if labels_B[i] == labels_A[result_1[i]]:
-#         num += 1
-# end_time = time.perf_counter()
-# elapsed_time = end_time - start_time
-# print(f"task1运行时间：{elapsed_time} 秒")
-# print(f"task1符合个数：{num}个")
-# print(f"task1正确率：{num / 30000}")
+
+
+# task 1
+start_time = time.perf_counter()
+num = 0
+location_1 = np.zeros(30000, dtype=int)
+distance_Euclidean_AB = np.zeros((30000, 30000))
+threads = []
+chunk_size = 7500 # 每个线程处理的块大小
+for i in range(0, 30000, chunk_size):
+    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 1, location_1, distance_Euclidean_AB))
+    threads.append(t)
+    t.start()
+for t in threads:
+    t.join()
+for i in range(30000):
+    if labels_B[i] == labels_A[location_1[i]]:
+        num += 1
+end_time = time.perf_counter()
+elapsed_time = end_time - start_time
+print(f"task1运行时间：{elapsed_time} 秒")
+print(f"task1符合个数：{num}个")
+print(f"task1正确率：{num / 30000}")
 
 # # task 2 曼哈顿距离
 # start_time = time.perf_counter()
 # num = 0
-# result_2_1 = np.zeros(30000, dtype=int)
+# location_2_1 = np.zeros(30000, dtype=int)
+# distance_Manhattan_AB = np.zeros((30000, 30000))
 # threads = []
 # chunk_size = 7500 # 每个线程处理的块大小
 # for i in range(0, 30000, chunk_size):
-#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 2, result_2_1))
+#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 2, location_2_1, distance_Manhattan_AB))
 #     threads.append(t)
 #     t.start()
 # for t in threads:
 #     t.join()
 # for i in range(30000):
-#     if labels_B[i] == labels_A[result_2_1[i]]:
+#     if labels_B[i] == labels_A[location_2_1[i]]:
 #         num += 1
 # end_time = time.perf_counter()
 # elapsed_time = end_time - start_time
@@ -146,17 +156,18 @@ def calculate_and_compare_KNN(start_index, end_index, flag, result):
 # # task 2 L_infinity
 # start_time = time.perf_counter()
 # num = 0
-# result_2_2 = np.zeros(30000, dtype=int)
+# location_2_2 = np.zeros(30000, dtype=int)
+# distance_L_infunity_AB = np.zeros((30000, 30000))
 # threads = []
 # chunk_size = 7500 # 每个线程处理的块大小
 # for i in range(0, 30000, chunk_size):
-#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 3, result_2_2))
+#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 3, location_2_2, distance_L_infunity_AB))
 #     threads.append(t)
 #     t.start()
 # for t in threads:
 #     t.join()
 # for i in range(30000):
-#     if labels_B[i] == labels_A[result_2_2[i]]:
+#     if labels_B[i] == labels_A[location_2_2[i]]:
 #         num += 1
 # end_time = time.perf_counter()
 # elapsed_time = end_time - start_time
@@ -167,17 +178,18 @@ def calculate_and_compare_KNN(start_index, end_index, flag, result):
 # # task 2 p=4
 # start_time = time.perf_counter()
 # num = 0
-# result_2_3 = np.zeros(30000, dtype=int)
+# location_2_3 = np.zeros(30000, dtype=int)
+# distance_p_4_AB = np.zeros((30000, 30000))
 # threads = []
 # chunk_size = 7500 # 每个线程处理的块大小
 # for i in range(0, 30000, chunk_size):
-#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 4, result_2_3))
+#     t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 30000), 4, location_2_3, distance_p_4_AB))
 #     threads.append(t)
 #     t.start()
 # for t in threads:
 #     t.join()
 # for i in range(30000):
-#     if labels_B[i] == labels_A[result_2_3[i]]:
+#     if labels_B[i] == labels_A[location_2_3[i]]:
 #         num += 1
 # end_time = time.perf_counter()
 # elapsed_time = end_time - start_time
@@ -185,42 +197,42 @@ def calculate_and_compare_KNN(start_index, end_index, flag, result):
 # print(f"task2（p=4）符合个数：{num}个")
 # print(f"task2（p=4）正确率：{num / 30000}")
 
-# task 3 NN=3
-start_time = time.perf_counter()
-num = 0
-NN = 3
-result_3_1 = np.zeros((NN, 30000), dtype=int) 
-threads = []
-chunk_size = 7500 # 每个线程处理的块大小
-for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare_KNN, args=(i, min(i + chunk_size, 30000), 5, result_3_1))
-    threads.append(t)
-    t.start()
-for t in threads:
-    t.join()
-labels_count_3_1 = np.zeros((10, 30000), dtype=int)
-for i in range(NN):
-    for j in range(30000):
-        labels_count_3_1[labels_A[result_3_1[i, j]], j] += 1
-labels_3_1 = np.argmax(labels_count_3_1, axis=0)
-for i in range(30000):
-    if labels_B[i] == labels_3_1[i]:
-        num += 1
-end_time = time.perf_counter()
-elapsed_time = end_time - start_time
-print(f"task3（NN=3）运行时间：{elapsed_time} 秒")
-print(f"task3（NN=3）符合个数：{num}个")
-print(f"task3（NN=3）正确率：{num / 30000}")
+# # task 3 NN=3
+# start_time = time.perf_counter()
+# num = 0
+# NN = 3
+# location_3_1 = np.zeros((NN, 30000), dtype=int) 
+# threads = []
+# chunk_size = 7500 # 每个线程处理的块大小
+# for i in range(0, 30000, chunk_size):
+#     t = threading.Thread(target=compare_KNN, args=(i, min(i + chunk_size, 30000), location_3_1, distance_Euclidean_AB))
+#     threads.append(t)
+#     t.start()
+# for t in threads:
+#     t.join()
+# labels_count_3_1 = np.zeros((10, 30000), dtype=int)
+# for i in range(NN):
+#     for j in range(30000):
+#         labels_count_3_1[labels_A[location_3_1[i, j]], j] += 1
+# labels_3_1 = np.argmax(labels_count_3_1, axis=0)
+# for i in range(30000):
+#     if labels_B[i] == labels_3_1[i]:
+#         num += 1
+# end_time = time.perf_counter()
+# elapsed_time = end_time - start_time
+# print(f"task3（NN=3）运行时间：{elapsed_time} 秒")
+# print(f"task3（NN=3）符合个数：{num}个")
+# print(f"task3（NN=3）正确率：{num / 30000}")
 
 # task 3 NN=5
 start_time = time.perf_counter()
 num = 0
 NN = 5
-result_3_2 = np.zeros((NN, 30000), dtype=int) 
+location_3_2 = np.zeros((NN, 30000), dtype=int) 
 threads = []
 chunk_size = 7500 # 每个线程处理的块大小
 for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare_KNN, args=(i, min(i + chunk_size, 30000), 6, result_3_2))
+    t = threading.Thread(target=compare_KNN, args=(i, min(i + chunk_size, 30000), location_3_2, distance_Euclidean_AB))
     threads.append(t)
     t.start()
 for t in threads:
@@ -228,7 +240,7 @@ for t in threads:
 labels_count_3_2 = np.zeros((10, 30000), dtype=int)
 for i in range(NN):
     for j in range(30000):
-        labels_count_3_2[labels_A[result_3_2[i, j]], j] += 1
+        labels_count_3_2[labels_A[location_3_2[i, j]], j] += 1
 labels_3_2 = np.argmax(labels_count_3_2, axis=0)
 for i in range(30000):
     if labels_B[i] == labels_3_2[i]:
@@ -243,11 +255,11 @@ print(f"task3（NN=5）正确率：{num / 30000}")
 start_time = time.perf_counter()
 num = 0
 NN = 7
-result_3_3 = np.zeros((NN, 30000), dtype=int) 
+location_3_3 = np.zeros((NN, 30000), dtype=int) 
 threads = []
 chunk_size = 7500 # 每个线程处理的块大小
 for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare_KNN, args=(i, min(i + chunk_size, 30000), 7, result_3_3))
+    t = threading.Thread(target=compare_KNN, args=(i, min(i + chunk_size, 30000), location_3_3, distance_Euclidean_AB))
     threads.append(t)
     t.start()
 for t in threads:
@@ -255,7 +267,7 @@ for t in threads:
 labels_count_3_3 = np.zeros((10, 30000), dtype=int)
 for i in range(NN):
     for j in range(30000):
-        labels_count_3_3[labels_A[result_3_3[i, j]], j] += 1
+        labels_count_3_3[labels_A[location_3_3[i, j]], j] += 1
 labels_3_3 = np.argmax(labels_count_3_3, axis=0)
 for i in range(30000):
     if labels_B[i] == labels_3_3[i]:
@@ -270,11 +282,11 @@ print(f"task3（NN=7）正确率：{num / 30000}")
 start_time = time.perf_counter()
 num = 0
 NN = 11
-result_3_4 = np.zeros((NN, 30000), dtype=int) 
+location_3_4 = np.zeros((NN, 30000), dtype=int) 
 threads = []
 chunk_size = 7500 # 每个线程处理的块大小
 for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare_KNN, args=(i, min(i + chunk_size, 30000), 8, result_3_4))
+    t = threading.Thread(target=compare_KNN, args=(i, min(i + chunk_size, 30000), location_3_4, distance_Euclidean_AB))
     threads.append(t)
     t.start()
 for t in threads:
@@ -282,7 +294,7 @@ for t in threads:
 labels_count_3_4 = np.zeros((10, 30000), dtype=int)
 for i in range(NN):
     for j in range(30000):
-        labels_count_3_4[labels_A[result_3_4[i, j]], j] += 1
+        labels_count_3_4[labels_A[location_3_4[i, j]], j] += 1
 labels_3_4 = np.argmax(labels_count_3_4, axis=0)
 for i in range(30000):
     if labels_B[i] == labels_3_4[i]:
@@ -297,11 +309,11 @@ print(f"task3（NN=11）正确率：{num / 30000}")
 start_time = time.perf_counter()
 num = 0
 NN =31
-result_3_5 = np.zeros((NN, 30000), dtype=int) 
+location_3_5 = np.zeros((NN, 30000), dtype=int) 
 threads = []
 chunk_size = 7500 # 每个线程处理的块大小
 for i in range(0, 30000, chunk_size):
-    t = threading.Thread(target=calculate_and_compare_KNN, args=(i, min(i + chunk_size, 30000), 9, result_3_5))
+    t = threading.Thread(target=compare_KNN, args=(i, min(i + chunk_size, 30000), location_3_5, distance_Euclidean_AB))
     threads.append(t)
     t.start()
 for t in threads:
@@ -309,7 +321,7 @@ for t in threads:
 labels_count_3_5 = np.zeros((10, 30000), dtype=int)
 for i in range(NN):
     for j in range(30000):
-        labels_count_3_5[labels_A[result_3_5[i, j]], j] += 1
+        labels_count_3_5[labels_A[location_3_5[i, j]], j] += 1
 labels_3_5 = np.argmax(labels_count_3_5, axis=0)
 for i in range(30000):
     if labels_B[i] == labels_3_5[i]:
