@@ -89,12 +89,20 @@ def find_min_distance(train, test, flag):
         distance = calculate_Euclidean_distance(train_expanded, test_expanded)
         sorted_indices = np.argsort(distance, axis=0)
         location = sorted_indices[0:NN, :]
+    if flag == 10:
+        distance = calculate_Euclidean_distance(train_expanded, test_expanded)
+        sorted_indices = np.argsort(distance, axis=0)
+        location = sorted_indices[1, :]
     return location, distance
 
 def calculate_and_compare(start_index, end_index, flag, location, distance):
     for i in range(start_index, end_index):
         location[(i * 1) : ((i + 1) * 1)] = find_min_distance(images_A[0:30000, :], images_B[(i * 1):((i + 1) * 1), :], flag)[0]
         distance[:, (i * 1) : ((i + 1) * 1)] = find_min_distance(images_A[0:30000, :], images_B[(i * 1):((i + 1) * 1), :], flag)[1]
+
+def calculate_and_compare_without_record(start_index, end_index, flag, location):
+    for i in range(start_index, end_index):
+        location[(i * 1) : ((i + 1) * 1)] = find_min_distance(images_A[0:30000, :], images_B[(i * 1):((i + 1) * 1), :], flag)[0]
 
 def calculate_and_compare_KNN(start_index, end_index, flag, location):
     for i in range(start_index, end_index):
@@ -105,6 +113,9 @@ def compare_KNN(start_index, end_index, NN, location, distance):
         sorted_indices = np.argsort(distance[:, (i * 1):((i + 1) * 1)], axis=0)
         location[:, (i * 1) : ((i + 1) * 1)] = sorted_indices[0:NN, :]
 
+def calculate_and_compare_C(start_index, end_index, flag, location):
+    for i in range(start_index, end_index):
+        location[(i * 1) : ((i + 1) * 1)] = find_min_distance(images_C[0:30000, :], images_C[(i * 1):((i + 1) * 1), :], flag)[0]
 
 
 
@@ -331,3 +342,28 @@ elapsed_time = end_time - start_time
 print(f"task3（NN=31）运行时间：{elapsed_time} 秒")
 print(f"task3（NN=31）符合个数：{num}个")
 print(f"task3（NN=31）正确率：{num / 30000}")
+
+# task4
+start_time = time.perf_counter()
+num = 0
+location_1 = np.zeros(30000, dtype=int)
+threads = []
+chunk_size = 15000 # 每个线程处理的块大小
+for i in range(0, 60000, chunk_size):
+    t = threading.Thread(target=calculate_and_compare, args=(i, min(i + chunk_size, 60000), 10, location_1))
+    threads.append(t)
+    t.start()
+for t in threads:
+    t.join()
+for i in range(60000):
+    if labels_C[i] == labels_C[location_1[i]]:
+        num += 1
+end_time = time.perf_counter()
+elapsed_time = end_time - start_time
+print(f"task4运行时间：{elapsed_time} 秒")
+print(f"task4符合个数：{num}个")
+print(f"task4正确率：{num / 60000}")
+
+
+# task5
+# 降采样
