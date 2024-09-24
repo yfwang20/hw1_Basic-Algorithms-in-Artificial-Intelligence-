@@ -148,14 +148,6 @@ def downsampling_2_max(image):
     '''
     downsampling used in task5_1
     '''
-    A = image[:, ::2]
-    B = image[:, 1::2]
-    return np.maximum(A, B)
-
-def downsampling_4_max(image):
-    '''
-    downsampling used in task5_2
-    '''
     image_2d = image.reshape(30000, 28, 28)
     A = image_2d[:, ::2, ::2]
     B = image_2d[:, 1::2, ::2]
@@ -163,6 +155,19 @@ def downsampling_4_max(image):
     D = image_2d[:, 1::2, 1::2]
     new = np.maximum.reduce([A, B, C, D])
     new_1d = new.reshape(30000, 196)
+    return new_1d
+
+def downsampling_4_max(image):
+    '''
+    downsampling used in task5_2
+    '''
+    image_2d = image.reshape(30000, 14, 14)
+    A = image_2d[:, ::2, ::2]
+    B = image_2d[:, 1::2, ::2]
+    C = image_2d[:, ::2, 1::2]
+    D = image_2d[:, 1::2, 1::2]
+    new = np.maximum.reduce([A, B, C, D])
+    new_1d = new.reshape(30000, 49)
     return new_1d
     
 def interpolation_2_bilinearity(image):
@@ -435,8 +440,8 @@ print(f"task4正确率：{num / 60000}")
 # 降采样
 images_A_maxdown_2 = downsampling_2_max(images_A)
 images_B_maxdown_2 = downsampling_2_max(images_B)
-images_A_maxdown_4 = downsampling_4_max(images_A)
-images_B_maxdown_4 = downsampling_4_max(images_B)
+images_A_maxdown_4 = downsampling_4_max(images_A_maxdown_2)
+images_B_maxdown_4 = downsampling_4_max(images_B_maxdown_2)
 images_A_linearup_2 = interpolation_2_bilinearity(images_A)
 images_B_linearup_2 = interpolation_2_bilinearity(images_B)
 
